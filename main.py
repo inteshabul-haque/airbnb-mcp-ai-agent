@@ -116,10 +116,17 @@ async def hotel_search(query):
         system_prompt=prompts.AIRBNB_PROMPT
     )
 
-    # Add user message to memory
+    # ======================================
+    # SAVE USER MESSAGE
+    # ======================================
+
     chat_history.append(
         HumanMessage(content=query)
     )
+
+    # ======================================
+    # RUN AGENT
+    # ======================================
 
     result = await agent.ainvoke(
         {
@@ -127,16 +134,52 @@ async def hotel_search(query):
         }
     )
 
-    response = result["messages"][-1].text
+    print("\n============= FULL RESULT =============\n")
+    print(result)
+    print("\n=======================================\n")
 
-    # Save AI response in memory
+    # ======================================
+    # EXTRACT RESPONSE
+    # ======================================
+
+    response_data = result["messages"][-1].content
+
+    # MCP sometimes returns list format
+    if isinstance(response_data, list):
+
+        cleaned_response = []
+
+        for item in response_data:
+
+            if isinstance(item, dict):
+
+                if item.get("type") == "text":
+
+                    cleaned_response.append(
+                        item.get("text", "")
+                    )
+
+            else:
+                cleaned_response.append(str(item))
+
+        response = "\n".join(cleaned_response)
+
+    else:
+        response = str(response_data)
+
+    # ======================================
+    # SAVE AI RESPONSE TO MEMORY
+    # ======================================
+
     chat_history.append(
         AIMessage(content=response)
     )
 
-    print("\n============== AI RESPONSE ==============\n")
+    print("\n============= CLEAN RESPONSE =============\n")
     print(response)
-    print("\n=========================================\n")
+    print("\n==========================================\n")
+
+    return response
 
 
 # =========================================================
@@ -165,9 +208,13 @@ async def ask():
 
         try:
 
-            await hotel_search(query)
+            response = await hotel_search(query)
 
-        except Exception as e:
+            print("\n============== AI RESPONSE ==============\n")
+            print(response)
+            print("\n=========================================\n")
+
+        except Exception:
 
             print("\n=========== FULL ERROR ===========\n")
 
