@@ -52,16 +52,19 @@ footer {
 /* Title */
 .title {
     text-align: center;
-    color: #ff0000;
+    color: #ff1a1a;
+
     font-size: 72px;
     font-weight: 900;
+
     letter-spacing: 4px;
+
     margin-top: 20px;
     margin-bottom: 10px;
 
-    text-shadow: 0px 0px 20px red;
+    text-shadow: 0px 0px 10px rgba(255,0,0,0.45);
 }
-
+            
 /* Subtitle */
 .subtitle {
     text-align: center;
